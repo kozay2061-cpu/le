@@ -888,7 +888,23 @@ input, textarea, select, .tab, .data-table td, .report-table td, .report-table t
 <script>
 // --- ၁။ Data သိမ်းဆည်းခြင်း Function (Auto Calculation) ---
 function archiveDailyData() {
-    var today = new Date().toLocaleDateString('en-GB'); 
+    // ၁။ အချိန်ကို စစ်ဆေးပြီး AM / PM သတ်မှတ်ခြင်း
+    var now = new Date();
+    var dateOnly = now.toLocaleDateString('en-GB'); // 14/02/2026
+    var hour = now.getHours(); // နာရီကို ယူမယ် (0 - 23)
+
+    var session = "AM";
+    // ၁၆ နာရီ (ညနေ ၄ နာရီ) နှင့် အထက်ဆိုရင် PM၊ အောက်ဆိုရင် AM
+    if (hour >= 16) {
+        session = "PM";
+    } else {
+        session = "AM";
+    }
+
+    // ရက်စွဲပုံစံ - "14/02/2026 (AM)"
+    var today = dateOnly + " (" + session + ")"; 
+    
+    // ကျန်တာများ မူလအတိုင်း...
     var totalAmount = 0;
     var netTotal = 0;
     var winTotal = 0;
@@ -920,7 +936,7 @@ function archiveDailyData() {
     if (totalAmount === 0 && profit === 0) return;
 
     var dailyRecord = {
-        date: today,
+        date: today, // (AM/PM ပါဝင်သော ရက်စွဲ)
         total: totalAmount,
         profit: profit,
         win: winNum,
@@ -931,7 +947,6 @@ function archiveDailyData() {
     history.push(dailyRecord);
     localStorage.setItem('my_weekly_record', JSON.stringify(history));
 }
-
 // --- ၂။ Reset & Delete Function ---
 window.runSafeDelete = function() {
     archiveDailyData(); // ၁. သိမ်းမယ်
@@ -953,7 +968,6 @@ window.runSafeDelete = function() {
     alert("✅ ယနေ့စာရင်းကို History တွင်သိမ်းပြီး၊ အသစ်ပြန်ဖွင့်လိုက်ပါပြီ။");
     window.location.reload();
 }
-
 // --- ၃။ History ဖွင့်ခြင်း ---
 function openHistoryModal() {
     var modal = document.getElementById('historyModal');
@@ -989,17 +1003,21 @@ function openHistoryModal() {
     }
     modal.style.display = 'flex';
 }
-
 // --- ၄။ Report Functions ---
 function displayWeeklyReport() {
     var records = JSON.parse(localStorage.getItem('my_weekly_record') || "[]");
     var weeklyTotal = 0;
     var weeklyProfit = 0;
+    
     var oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
     records.forEach(r => {
         if(r.date) {
-            var parts = r.date.split('/');
+            // "14/02/2026 (AM)" ထဲက "14/02/2026" ကိုပဲ ဆွဲထုတ်မယ်
+            var cleanDateStr = r.date.split(' ')[0]; // Space ခံပြီး ရှေ့ပိုင်းယူမယ်
+            var parts = cleanDateStr.split('/');
+
             if(parts.length === 3) {
                 var rDate = new Date(parts[2], parts[1] - 1, parts[0]);
                 if (rDate >= oneWeekAgo) {
@@ -1011,17 +1029,21 @@ function displayWeeklyReport() {
     });
     alert("📅 ယခုအပတ် စာရင်းချုပ် (Last 7 Days)\n------------------------\n💰 ရောင်းရငွေ: " + weeklyTotal.toLocaleString() + "\n📈 အမြတ်/အရှုံး: " + Math.round(weeklyProfit).toLocaleString());
 }
-
 function displayMonthlyReport() {
     var records = JSON.parse(localStorage.getItem('my_weekly_record') || "[]");
     var monthlyTotal = 0;
     var monthlyProfit = 0;
+    
     var now = new Date();
     var currentMonth = now.getMonth();
     var currentYear = now.getFullYear();
+
     records.forEach(r => {
         if(r.date) {
-            var parts = r.date.split('/');
+            // (AM)/(PM) ဖယ်ပြီး ရက်စွဲစစ်မယ်
+            var cleanDateStr = r.date.split(' ')[0];
+            var parts = cleanDateStr.split('/');
+
             if(parts.length === 3) {
                 var rDate = new Date(parts[2], parts[1] - 1, parts[0]);
                 if (rDate.getMonth() === currentMonth && rDate.getFullYear() === currentYear) {
