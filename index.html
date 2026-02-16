@@ -451,7 +451,7 @@ input, textarea, select, .tab, .data-table td, .report-table td, .report-table t
 </div>    
  <div style="display: flex; align-items: center; gap: 5px; margin: 5px 0;">
 
-    <button onclick="saveMasterSystem()" style="background:#27ae60; color:white; padding: 6px 10px; font-size:12px; border:none; border-radius:4px; white-space: nowrap; display: flex; align-items: center; gap: 3px;">
+    <button onclick="saveCurrentSession()" style="background:#27ae60; color:white; padding: 6px 10px; font-size:12px; border:none; border-radius:4px; white-space: nowrap; display: flex; align-items: center; gap: 3px;">
         💾 Save
     </button>
 
@@ -1520,14 +1520,50 @@ if (!settings.customLimits) settings.customLimits = {};
     }
     // (၂) သိမ်းထားသော စာရင်းများကို ဖွင့်ကြည့်မည်
 function openArchiveModal() {
-    var modal = document.getElementById('archiveModal');
-    if(modal) {
-        modal.style.display = 'flex'; // Modal ကို ဖွင့်မယ်
-        updateHistoryTable();         // ဇယားကို ဆွဲထည့်မယ်
-    } else {
-        alert("Error: 'archiveModal' မရှိပါ။");
+        let archives = JSON.parse(localStorage.getItem('2d_archives')) || [];
+        let listHtml = "";
+
+        if (archives.length === 0) {
+            listHtml = "<div style='text-align:center; padding:20px; color:#777;'>သိမ်းထားသော စာရင်းမရှိသေးပါ</div>";
+        } else {
+            archives.forEach(file => {
+                listHtml += `
+                <div style="background:white; padding:10px; border-radius:8px; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,0.1); border-left: 5px solid #3498db;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span style="font-weight:bold; color:#2c3e50;">${file.name}</span>
+                        <span style="font-size:12px; color:#7f8c8d;">${file.date}</span>
+                    </div>
+                    <div style="font-size:14px; color:#27ae60; font-weight:bold; margin-bottom:8px;">
+                        Total: ${file.total.toLocaleString()}
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="loadArchive(${file.id})" style="flex:1; background:#3498db; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">📂 ပြန်ဖွင့်</button>
+                        <button onclick="deleteArchive(${file.id})" style="width:40px; background:#e74c3c; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">🗑️</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        document.getElementById('archiveList').innerHTML = listHtml;
+        document.getElementById('archiveModal').style.display = 'flex';
+ }
+     // (၃) ပြန်ဖွင့်မည် (Load)
+    function loadArchive(id) {
+        if(!confirm("⚠️ သတိပေးချက်:\nလက်ရှိရိုက်ထားသော စာရင်းများ ပျက်သွားပြီး၊ ရွေးချယ်သော စာရင်းကို အစားထိုးပါမည်။ ဆက်လုပ်မလား?")) return;
+
+        let archives = JSON.parse(localStorage.getItem('2d_archives')) || [];
+        let file = archives.find(f => f.id === id);
+        
+        if (file) {
+            customers = file.customers;
+            settings = file.settings;
+            saveToStorage();
+            renderTabs();
+            renderAll();
+            document.getElementById('archiveModal').style.display = 'none';
+            alert("📂 စာရင်းဟောင်း ပြန်ရောက်ပါပြီ။");
+        }
     }
-}
 function updateHistoryTable() {
     var archives = JSON.parse(localStorage.getItem('myLedgerDB')) || [];
     
@@ -1600,22 +1636,6 @@ function deleteArchiveItem(originalIndex) {
         openArchiveModal(); // ချက်ချင်း update ဖြစ်အောင် ပြန်ခေါ်မယ်
     }
 }
-
-    // (၃) ပြန်ဖွင့်မည် (Load)
-  function loadArchive(id) {
-        if(!confirm("⚠️ သတိပေးချက်:\nလက်ရှိရိုက်ထားသော စာရင်းများ ပျက်သွားပြီး၊ ရွေးချယ်သော စာရင်းကို အစားထိုးပါမည်။ ဆက်လုပ်မလား?")) return;
-        let archives = JSON.parse(localStorage.getItem('2d_archives')) || [];
-        let file = archives.find(f => f.id === id);
-        if (file) {
-            customers = file.customers;
-            settings = file.settings;
-            saveToStorage();
-            renderTabs();
-            renderAll();
-            document.getElementById('archiveModal').style.display = 'none';
-            alert("📂 စာရင်းဟောင်း ပြန်ရောက်ပါပြီ။");
-        }
-    }
     // (၄) ဖျက်မည် (Delete)
   function deleteArchive(id) {
         if(!confirm("ဒီမှတ်တမ်းကို ဖျက်မှာ သေချာလား?")) return;
@@ -2035,39 +2055,31 @@ function deleteArchiveItem(originalIndex) {
   function deleteSelectedRows() { 
       if (activeIndex === -1 || !customers[activeIndex]) return; const checkboxes = document.querySelectorAll('.row-checkbox:checked'); if (checkboxes.length === 0) return alert("ဖျက်လိုသော စာရင်းများကို အရင်ရွေးပါ"); if (confirm(`ရွေးချယ်ထားသော စာရင်း (${checkboxes.length}) ခုကို ဖျက်မှာ သေချာပါသလား?`)) { const indicesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-index'))).sort((a, b) => b - a); indicesToDelete.forEach(idx => { let historyItem = customers[activeIndex].history[idx]; if (historyItem) { customers[activeIndex].data = customers[activeIndex].data.filter(d => d.id !== historyItem.id); customers[activeIndex].history.splice(idx, 1); } }); saveToStorage(); renderAll(); } }
   function exportBackup() { 
-    // ၁။ လက်ရှိအချိန်ကို ယူမည်
     const now = new Date();
-    // ၂။ ဖိုင်နာမည်အတွက် ရက်စွဲနှင့် အချိန်ကို ဖန်တီးမည်
-    // (Android လက်ခံမည့် ပုံစံ: 2026-01-18_14-30-05)
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hour = String(now.getHours()).padStart(2, '0');
-    const minute = String(now.getMinutes()).padStart(2, '0');
-    const second = String(now.getSeconds()).padStart(2, '0');
-    const fileNameDate = `${year}-${month}-${day}_${hour}-${minute}-${second}`;
-    // ၃။ Data နှင့် Archives များကို စုစည်းမည်
-    const savedArchives = JSON.parse(localStorage.getItem('2d_archives')) || [];
+    
+    // (၁) ဖိုင်နာမည်အတွက် ရက်စွဲပုံစံ (ဥပမာ: 2D_Backup_2026-01-13_14-30.json)
+    // ဖိုင်နာမည်တွင် : (colon) သုံးမရသဖြင့် - (dash) သုံးထားပါသည်
+    const fileNameDate = now.getFullYear() + "-" + 
+                         (now.getMonth() + 1).toString().padStart(2, '0') + "-" + 
+                         now.getDate().toString().padStart(2, '0') + "_" + 
+                         now.getHours().toString().padStart(2, '0') + "-" + 
+                         now.getMinutes().toString().padStart(2, '0');
+
+    // (၂) JSON အထဲမှာလည်း သိမ်းချင်ရင် ဒီမှာထည့်ပါ (backupDate အနေဖြင့် ပါသွားပါမည်)
     const dataToSave = {
         customers: customers,
         settings: settings,
-        archives: savedArchives, // မှတ်တမ်းဟောင်းများပါ ထည့်မည်
-        backupDate: now.toLocaleString('en-GB') 
+        backupDate: now.toLocaleString('en-GB') // ရက်စွဲနဲ့အချိန်ကို ဖိုင်ထဲမှာထည့်သိမ်းမည်
     };
-    // ၄။ ဖိုင်ထုတ်မည်
-    // application/octet-stream သည် Android ကို Download လုပ်ရန် တွန်းအားပေးသည်
-    let b = new Blob([JSON.stringify(dataToSave)], {type: 'application/octet-stream'});
-    let url = URL.createObjectURL(b);
+
+    let b = new Blob([JSON.stringify(dataToSave)], {type: 'application/json'});
     let l = document.createElement('a');
-    l.href = url;
-    // ဖိုင်နာမည် သတ်မှတ်ခြင်း (ဥပမာ: 2D_Backup_2026-01-18_14-30-05.json)
+    l.href = URL.createObjectURL(b);
+    
+    // ဖိုင်နာမည် ပြောင်းမည့်နေရာ
     l.download = `2D_Backup_${fileNameDate}.json`; 
-    // 🔥 Body ထဲထည့်ပြီးမှ Click ခိုင်းခြင်း (Android အတွက် အရေးကြီးသည်)
-    document.body.appendChild(l);
+    
     l.click(); 
-    document.body.removeChild(l);
-    // Memory ပြန်ရှင်းခြင်း
-    setTimeout(() => URL.revokeObjectURL(url), 100);
 }
   function saveImage(input) {
     // Customer ရွေးထားခြင်း ရှိမရှိ စစ်ပါ
@@ -3530,6 +3542,7 @@ function saveMasterSystem() {
         var oldDB = JSON.parse(localStorage.getItem('myLedgerDB')) || [];
         oldDB.push(historyItem);
         localStorage.setItem('myLedgerDB', JSON.stringify(oldDB));
+
 
         // ============================================
         // အပိုင်း (ခ) - Backup File Download (Raw Data)
