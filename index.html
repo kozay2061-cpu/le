@@ -2,7 +2,7 @@
 <html lang="my">
 <head>
     <meta charset="UTF-8">
-    <title>2D Master V.3.001 </title>
+    <title>2D လည်ဂျာ V.22.2 </title>
     <link rel="icon" href="https://i.ibb.co/6ckfFrqw/Gemini-Generated-Image-nlrzqsnlrzqsnlrz-1-1-1.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -372,6 +372,7 @@ input, textarea, select, .tab, .data-table td, .report-table td, .report-table t
     background: #2c3e50 !important; /* နောက်ခံ အပြာရင့် */
     padding: 8px 5px !important;  /* အကွက်ကို အပေါ်အောက် နည်းနည်းချဲ့မည် */
 }
+
     </style>
 <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
 </head>
@@ -449,7 +450,8 @@ input, textarea, select, .tab, .data-table td, .report-table td, .report-table t
             </div>
     </div>
 </div>    
- <div style="display: flex; align-items: center; gap: 5px; margin: 5px 0;">
+ <!-- ခလုတ်များ အပိုင်း (အစ) -->
+<div style="display: flex; align-items: center; gap: 5px; margin: 5px 0;">
 
     <button onclick="saveCurrentSession()" style="background:#27ae60; color:white; padding: 6px 10px; font-size:12px; border:none; border-radius:4px; white-space: nowrap; display: flex; align-items: center; gap: 3px;">
         💾 Save
@@ -463,19 +465,18 @@ input, textarea, select, .tab, .data-table td, .report-table td, .report-table t
         📜 မှတ်တမ်း
     </button>
 
+    <!-- id="importFile" ကို တစ်ခုတည်း ထားပါမယ် -->
     <input type="file" id="importFile" style="display:none" accept=".json,application/json" onchange="importBackup(this)">
-
+    </div>
 </div>
 
-    <input type="file" id="importFile" style="display:none" accept=".json,application/json" onchange="importBackup(this)">
-
+<div style="display:flex; justify-content: flex-end; align-items:center; gap:10px;">
+    <span id="trialDisplayBadge" style="color:#f39c12; font-weight:bold; font-size:12px; display:flex; align-items:center;"></span>
+    <button onclick="$('helpModal').style.display='flex'" style="background:rgba(255,255,255,0.1); border:none; border-radius:50%; width:30px; height:30px; color:white; cursor:pointer;">❓</button>
+    <button onclick="toggleSidebar()" style="background:rgba(255,255,255,0.1); border:none; border-radius:50%; width:30px; height:30px; color:white; cursor:pointer;">⚙️</button>
 </div>
+<!-- အောက်ခြေခလုတ်များ အပိုင်း (အဆုံး) -->
 
-                <div style="display:flex; gap:10px;">
-                    <span id="trialDisplayBadge" style="color:#f39c12; font-weight:bold; font-size:12px; display:flex; align-items:center;"></span>
-                    <button onclick="$('helpModal').style.display='flex'" style="background:rgba(255,255,255,0.1); border:none; border-radius:50%; width:30px; height:30px; color:white; cursor:pointer;">❓</button>
-                    <button onclick="toggleSidebar()" style="background:rgba(255,255,255,0.1); border:none; border-radius:50%; width:30px; height:30px; color:white; cursor:pointer;">⚙️</button>
-                </div>
             </div>
 <div id="helpModal">
     <div class="help-content">
@@ -687,16 +688,19 @@ input, textarea, select, .tab, .data-table td, .report-table td, .report-table t
         <div class="left-panel">
             <div class="action-btns" style="display:flex; gap:5px; padding:5px 5px; background:#f8f9fa; border-bottom:1px solid #eee;">
                 <input type="text" id="winNum" style="width:50px; text-align:center; font-weight:bold; border: 2px solid #34495e; border-radius: 6px;" placeholder="Win" oninput="saveWinNum()">
-                <button onclick="saveAsImage('captureArea', '2d_table')" style="flex:1; background:#17a2b8; color:white; border:none; border-radius:6px; font-size:13px; font-weight:bold;">📷 Image</button>
                 <button onclick="copyHistoryLog()" style="flex:1;
                 background:#27ae60; color:white; border:none; border-radius:6px;
                 font-size:13px; font-weight:bold;">📋 တစ်ဦးချင်း စာရင်း</button>
+                <button onclick="copySplitOverLimitText()"
+                style="flex:1; background:#17a2b8; color:white; border:none;
+                border-radius:6px; font-size:13px; font-weight:bold;">📤 Copy
+                (Split)</button>
                 <button onclick="copyOverLimitText()" style="flex:1;
                 background:#f39c12; color:white; border:none; border-radius:6px;
-                font-size:13px; font-weight:bold;">⚠️ ကာရန် copyယူ</button>
+                font-size:13px; font-weight:bold;">📤 ကာရန် copy</button>
                 <button onclick="showProfitTable()" style="flex:1;
                 background:#8e44ad; color:white; border:none; border-radius:6px;
-                font-size:13px; font-weight:bold;">📊 အရှုံး/အမြတ်</button>
+                font-size:13px; font-weight:bold;">📊 အရှုံး/ အမြတ်</button>
             </div>
             <div id="captureArea" style="flex:1; overflow-y:auto; padding:5px;"></div>
         </div>
@@ -1519,7 +1523,7 @@ if (!settings.customLimits) settings.customLimits = {};
         openArchiveModal(); 
     }
     // (၂) သိမ်းထားသော စာရင်းများကို ဖွင့်ကြည့်မည်
-function openArchiveModal() {
+  function openArchiveModal() {
         let archives = JSON.parse(localStorage.getItem('2d_archives')) || [];
         let listHtml = "";
 
@@ -1548,7 +1552,7 @@ function openArchiveModal() {
         document.getElementById('archiveModal').style.display = 'flex';
  }
      // (၃) ပြန်ဖွင့်မည် (Load)
-    function loadArchive(id) {
+  function loadArchive(id) {
         if(!confirm("⚠️ သတိပေးချက်:\nလက်ရှိရိုက်ထားသော စာရင်းများ ပျက်သွားပြီး၊ ရွေးချယ်သော စာရင်းကို အစားထိုးပါမည်။ ဆက်လုပ်မလား?")) return;
 
         let archives = JSON.parse(localStorage.getItem('2d_archives')) || [];
@@ -1564,7 +1568,7 @@ function openArchiveModal() {
             alert("📂 စာရင်းဟောင်း ပြန်ရောက်ပါပြီ။");
         }
     }
-function updateHistoryTable() {
+  function updateHistoryTable() {
     var archives = JSON.parse(localStorage.getItem('myLedgerDB')) || [];
     
     // Header ခေါင်းစဉ်အပိုင်း
@@ -1624,7 +1628,7 @@ function updateHistoryTable() {
     if(container) container.innerHTML = tableHTML;
 }
 // ဖျက်တဲ့ Function လေးပါ ထပ်ထည့်ပေးထားပါတယ်
-function deleteArchiveItem(originalIndex) {
+  function deleteArchiveItem(originalIndex) {
     if(confirm("ဖျက်မှာ သေချာလား?")) {
         let archives = JSON.parse(localStorage.getItem('myLedgerDB')) || [];
         // reverse လုပ်ပြီး ပြထားတာမို့ ပြန်ဖျက်ရင် တွက်ရခက်လို့ index အမှန်ကို ရှာဖျက်မယ်
@@ -1653,32 +1657,26 @@ function deleteArchiveItem(originalIndex) {
     // ====================================
 // ⚠️ Over Button (အတင်စာရင်း ကူးယူရန် Function - Updated Sort)
 // ========================================
-  function copyOverLimitText() {
-    // ၁။ Data ရယူခြင်း
+// --- (၁) အတင်စာရင်း Data တွက်ချက်ပေးမည့် Function (Common Helper) ---
+function getExportDataList() {
     let all = getOriginalTotals();
-
-    // ၂။ Setting တန်ဖိုးများ
     const preToggle = document.getElementById('preLimitToggle');
     const preInput = document.getElementById('preLimitAmt');
     const modeSelect = document.getElementById('limitModeSelect');
-    // Sort Mode ကို ဇယားကွက် Dropdown ကနေ လှမ်းကြည့်မယ်
     const sortEl = document.getElementById('sortMode');
-    const currentSort = sortEl ? sortEl.value : 'normal'; // normal, max, min
+    const currentSort = sortEl ? sortEl.value : 'normal'; 
     let preLimit = (preToggle && preToggle.checked && preInput) ? (parseInt(preInput.value) || 0) : 0;
     let cutMode = modeSelect ? modeSelect.value : 'normal';
+    
     let exportData = []; 
-    // ဒေတာစုဖို့ Array ဆောက်မယ်
-    let grandTotal = 0;
     for(let i = 0; i < 100; i++) {
         let numStr = i.toString().padStart(2, '0');
         let remaining = all[i];
-        // Pre-Limit ဖြတ်ခြင်း
         if (preLimit > 0) {
             let takePre = Math.min(remaining, preLimit);
             remaining = remaining - takePre;
         }
         if (remaining > 0) {
-            // Main/Custom Limit ဖြတ်ခြင်း
             let realLimit = getRealLimit(numStr);
             let houseHold = 0;
             if (realLimit > 0) {
@@ -1689,44 +1687,110 @@ function deleteArchiveItem(originalIndex) {
                 } else {
                     houseHold = Math.min(remaining, realLimit);
                 }
-            } else {
-                houseHold = 0; // Limit 0 (Closed) ဆိုရင် ဒိုင်မယူ၊ အကုန်အတင်
-            }
-
+            } else { houseHold = 0; }
             let exportAmt = remaining - houseHold;
-
-            // အတင်ရှိမှ စာရင်းထဲထည့်မယ်
             if (exportAmt > 0) {
                 exportData.push({ num: numStr, amt: exportAmt });
-                grandTotal += exportAmt;
             }
         }
     }
-
-    // ၃။ Sort စီခြင်း (ဇယားကွက်အတိုင်း)
     if (currentSort === 'max') {
-        // အများမှ အနည်းသို့ (Descending)
         exportData.sort((a, b) => b.amt - a.amt);
     } else if (currentSort === 'min') {
-        // အနည်းမှ အများသို့ (Ascending)
         exportData.sort((a, b) => a.amt - b.amt);
     }
-    // 'normal' ဆိုရင်တော့ 00-99 အတိုင်းပဲ ရှိပြီးသားမို့ ဘာမှလုပ်စရာမလိုပါ
+    
+    return { exportData, currentSort };
+}
 
-    // ၄။ Clipboard သို့ ကူးခြင်း
+// --- (၂) ပုံမှန် အတင်စာရင်း (၁ ပိုင်းတည်း) Copy ကူးရန် Function ---
+// ဒီ Function ကို မူလ Copy ခလုတ်မှာ သုံးပါ
+function copyOverLimitText() {
+    let { exportData, currentSort } = getExportDataList();
+    
     if(exportData.length > 0) {
-        // Array ကို စာသားပြောင်းခြင်း
-        let lines = exportData.map(item => `${item.num}-${item.amt}`);
-        let finalText = lines.join('\n') + `\n----------\nTotal: ${grandTotal.toLocaleString()}`;
+        let lines = [];
+        let total = 0;
+        exportData.forEach(item => {
+            lines.push(`${item.num}-${item.amt}`);
+            total += item.amt;
+        });
+
+        let finalText = "--- အတင်စာရင်း ---\n" + lines.join('\n') + 
+                        `\n----------\nTotal: ${total.toLocaleString()}`;
         
         copyToClipboard(finalText);
-        
         let sortMsg = (currentSort === 'max') ? " (Max Sort)" : (currentSort === 'min' ? " (Min Sort)" : "");
-        alert("✅ အတင်စာရင်း" + sortMsg + " ကူးယူပြီးပါပြီ!");
+        alert("✅ အတင်စာရင်းကို" + sortMsg + " Copy ကူးပြီးပါပြီ!");
     } else {
         alert("⚠️ အတင်မရှိပါ (No Export)");
     }
 }
+
+// --- (၃) နှစ်ပိုင်းခွဲ၍ အတင်စာရင်း Copy ကူးရန် Function ---
+// ဒီ Function ကို နှစ်ပိုင်းခွဲမည့် ခလုတ်အသစ်မှာ သုံးပါ
+function copySplitOverLimitText() {
+    let { exportData, currentSort } = getExportDataList();
+    
+    if(exportData.length > 0) {
+        let part1Lines = [];
+        let part2Lines = [];
+        let total1 = 0;
+        let total2 = 0;
+        
+        let unevenSplitCounter = 0;
+        exportData.forEach(item => {
+            let fullAmt = item.amt;
+            let splitAmt = Math.floor(fullAmt / 2);
+            let rem = fullAmt % 2; 
+            let amt1, amt2;
+            
+            if (rem === 0) { 
+                if (splitAmt % 50 !== 0) { 
+                    let floorVal = Math.floor(splitAmt / 50) * 50; 
+                    let ceilVal = Math.ceil(splitAmt / 50) * 50;   
+                    if (unevenSplitCounter % 2 === 0) {
+                        amt1 = ceilVal;
+                        amt2 = floorVal;
+                    } else {
+                        amt1 = floorVal;
+                        amt2 = ceilVal;
+                    }
+                    unevenSplitCounter++; 
+                } else {
+                    amt1 = splitAmt;
+                    amt2 = splitAmt;
+                }
+            } else { 
+                if (unevenSplitCounter % 2 === 0) {
+                    amt1 = splitAmt + rem;
+                    amt2 = splitAmt;
+                } else {
+                    amt1 = splitAmt;
+                    amt2 = splitAmt + rem;
+                }
+                unevenSplitCounter++; 
+            }
+            
+            part1Lines.push(`${item.num}-${amt1}`);
+            part2Lines.push(`${item.num}-${amt2}`);
+            total1 += amt1;
+            total2 += amt2;
+        });
+        
+        let finalText = "--- အပိုင်း (၁) ---\n" + part1Lines.join('\n') + 
+                        `\n----------\nTotal: ${total1.toLocaleString()}\n\n` +
+                        "--- အပိုင်း (၂) ---\n" + part2Lines.join('\n') + 
+                        `\n----------\nTotal: ${total2.toLocaleString()}`;
+        
+        copyToClipboard(finalText);
+        let sortMsg = (currentSort === 'max') ? " (Max Sort)" : (currentSort === 'min' ? " (Min Sort)" : "");
+        alert("✅ အတင်စာရင်းကို (၂) ပိုင်း အညီအမျှခွဲ၍" + sortMsg + " Copy ကူးပြီးပါပြီ!");
+    } else {
+        alert("⚠️ အတင်မရှိပါ (No Export)");
+    }
+}
+
   function processInput() {
     const field = $('rawInput'); 
     if (!field.value.trim() || activeIndex === -1) return;
@@ -3570,7 +3634,6 @@ function saveMasterSystem() {
         // customers = []; updateUI(); // လိုအပ်ရင် သုံးရန်
     }
 }
-
 // ==========================================
 // ဒီကုဒ်ကို Script ဖိုင်ရဲ့ အောက်ဆုံးမှာ ထားပေးပါfunction
 // ==========================================
@@ -3590,7 +3653,6 @@ function forceDownloadBackup() {
         alert("Error: 'saveMasterSystem' ဆိုတဲ့ Function ကို ရှာမတွေ့ပါ။ ကုဒ်နာမည် မှားနေနိုင်ပါသည်။");
     }
 }
-
 //// =========================================
 // 🔥 MOBILE BACKUP FIX (Confirm မခံဘဲ တန်းဒေါင်းမည့် Function)
 // ၁။ နေ့စဉ်စာရင်းကို တွက်ချက်ပြီး သိမ်းဆည်းခြင်း (Calculation Mode)
@@ -3655,7 +3717,6 @@ function archiveDailyData() {
     history.push(dailyRecord);
     localStorage.setItem('my_weekly_record', JSON.stringify(history));
 }
-
 // ၂။ Reset လုပ်သည့် Function (Win Num ပါဖျက်မည်)
 window.runSafeDelete = function() {
     // (က) ဖျက်ခါနီး မှတ်တမ်းအရင်သိမ်းမယ်
@@ -3692,7 +3753,6 @@ window.runSafeDelete = function() {
     alert("✅ ယနေ့စာရင်းကို History တွင်သိမ်းပြီး၊ အသစ်ပြန်ဖွင့်လိုက်ပါပြီ။");
     window.location.reload();
 }
-
 // ၃။ History ဇယားဖွင့်ခြင်း
 function openHistoryModal() {
     var modal = document.getElementById('historyModal');
@@ -3736,7 +3796,6 @@ function openHistoryModal() {
     
     modal.style.display = 'flex';
 }
-
 // ၄။ အပတ်စဉ် စာရင်းချုပ် (Weekly Report)
 function displayWeeklyReport() {
     var records = JSON.parse(localStorage.getItem('my_weekly_record') || "[]");
@@ -3763,7 +3822,6 @@ function displayWeeklyReport() {
 
     alert("📅 ယခုအပတ် စာရင်းချုပ် (Last 7 Days)\n------------------------\n💰 ရောင်းရငွေ: " + weeklyTotal.toLocaleString() + "\n📈 အမြတ်/အရှုံး: " + Math.round(weeklyProfit).toLocaleString());
 }
-
 // ၅။ လစဉ် စာရင်းချုပ် (Monthly Report)
 function displayMonthlyReport() {
     var records = JSON.parse(localStorage.getItem('my_weekly_record') || "[]");
@@ -3789,7 +3847,6 @@ function displayMonthlyReport() {
 
     alert("🗓️ ယခုလ စာရင်းချုပ် (This Month)\n------------------------\n💰 ရောင်းရငွေ: " + monthlyTotal.toLocaleString() + "\n📈 အမြတ်/အရှုံး: " + Math.round(monthlyProfit).toLocaleString());
 }
-
 // ၆။ History ဖျက်ရန်
 function clearHistoryLog() {
     if(confirm("မှတ်တမ်းအားလုံးကို ဖျက်မှာ သေချာပါသလား?")) {
@@ -3802,15 +3859,49 @@ function closeHistoryModal() {
     document.getElementById('historyModal').style.display = 'none';
 }
 // ၃။ History အားလုံးကို ဖျက်ခြင်း (Reset)
-function clearHistoryLog() {
-    if(confirm("မှတ်တမ်းဟောင်းအားလုံးကို ဖျက်မှာ သေချာပါသလား?")) {
-        localStorage.removeItem('my_weekly_record');
-        openHistoryModal(); // ဇယားကို ပြန် Refresh လုပ်မယ်
+  function copySplitAmountExport() {
+    // ၁။ Export ထွက်နေသော စာရင်း Array ကို ယူခြင်း (globalExportData ကို သုံးထားသည်)
+    if (typeof globalExportData === 'undefined' || globalExportData.length === 0) {
+        alert("ကူးယူရန် အလျှံစာရင်း မရှိသေးပါ!");
+        return;
     }
+
+    let part1Lines = [];
+    let part2Lines = [];
+    let total1 = 0;
+    let total2 = 0;
+
+    // ၂။ ဂဏန်းတစ်ခုချင်းစီကို ၂ နဲ့စားပြီး အပိုင်းခွဲခြင်း
+    globalExportData.forEach(item => {
+        let num = item.num;
+        let fullAmt = parseInt(item.amt);
+        
+        // ၂ နဲ့စားသည် (အကြွင်းရှိပါက ပထမပိုင်းထဲသို့ ၁ တိုးထည့်ပေးမည်)
+        let splitAmt = Math.floor(fullAmt / 2);
+        let rem = fullAmt % 2; 
+
+        let amt1 = splitAmt + rem; // အပိုင်း (၁)
+        let amt2 = splitAmt;       // အပိုင်း (၂)
+
+        part1Lines.push(`${num}-${amt1}`);
+        part2Lines.push(`${num}-${amt2}`);
+        
+        total1 += amt1;
+        total2 += amt2;
+    });
+
+    // ၃။ စာသားအဖြစ် ပေါင်းစည်းခြင်း
+    let finalText = "--- အပိုင်း (၁) ---\n" + part1Lines.join("\n") + 
+                    "\n----------\nTotal: " + total1.toLocaleString() +
+                    "\n\n--- အပိုင်း (၂) ---\n" + part2Lines.join("\n") + 
+                    "\n----------\nTotal: " + total2.toLocaleString();
+
+    // ၄။ Clipboard သို့ ကူးယူခြင်း
+    copyToClipboard(finalText);
+    alert("ငွေပမာဏကို တစ်ဝက်စီခွဲ၍ အပိုင်း (၁) နှင့် (၂) အဖြစ် Copy ကူးပြီးပါပြီ။");
 }
 
 </script>
-
   <div id="summaryModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:center;">
     
     <div style="background:white; width:95%; max-width:600px; border-radius:12px; overflow:hidden; font-family: 'Pyidaungsu', 'Padauk', sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display:flex; flex-direction:column; max-height:95vh;">
