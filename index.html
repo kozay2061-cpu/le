@@ -2,7 +2,7 @@
 <html lang="my">
 <head>
     <meta charset="UTF-8">
-    <title>2D လည်ဂျာ V.22.2 </title>
+    <title>2D လည်ဂျာ V.4.22.2 </title>
     <link rel="icon" href="https://i.ibb.co/6ckfFrqw/Gemini-Generated-Image-nlrzqsnlrzqsnlrz-1-1-1.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -1795,42 +1795,32 @@ function copySplitOverLimitText() {
     const field = $('rawInput'); 
     if (!field.value.trim() || activeIndex === -1) return;
 
-    // 🔥 ပြင်ဆင်ထားသော နေရာ (Syntax Error ဖြေရှင်းပြီး)
-    // အရင်ကမှားနေတဲ့ စာလုံးအပိုတွေကို ဖယ်လိုက်ပါပြီ
     let rawLines = field.value.split(/\r?\n/); 
     
     let added = false;
     const WARNING_LIMIT = 30000; 
-     // 🔥 ဒီနေ့ ရက်စွဲကို ကြိုယူထားမယ် (YYYY-MM-DD ပုံစံ)
     let todayDate = new Date().toISOString().split('T')[0];
 
     for (let rawLine of rawLines) {
         if (!rawLine.trim()) continue;
         let line = uniToEng(rawLine.toLowerCase());
+        
         // =============================================
         // 🧹 Garbage Cleaning (မဆိုင်သောစာများ သန့်ရှင်းရေး)
         // =============================================
-        // ၁။ နှုတ်ဆက်စကားနှင့် လူနာမည်များ
         line = line.replace(/အစ်ကို|ညီလေး|ဆရာ|ကို|ဦး|ဒေါ်|ဗျာ|ခင်ဗျာ|ရှင့်|နော်|ok|help|plz|hi|hello|mingalarpar/g, ' ');
-        // ၂။ အချိန်ကာလများ
         line = line.replace(/မနက်|ညနေ|နေ့လည်|နံ|နံက်|ည|morning|evening|am|pm/g, ' ');
-        // ၃။ စကားအပိုများနှင့် ယူနစ်များ
         line = line.replace(/ကျေးဇူး|တင်ပါတယ်|ရလား|ရမလား|လုပ်ပေးပါ|ထိုးမယ်|ပို|ဆို|ထဲက|သီးသန့်|အပြီး|စီး/g, ' ');
-        // ၄။ "ဒဲ့" ဆိုသော စကားလုံး (ဒဲ့ကပ် dk မဟုတ်လျှင် ဖျက်မည်)
         line = line.replace(/ဒဲ့(?!ကပ်|k)/g, ' '); 
         line = line.replace(/တည့်/g, ' ');
+        
         // =============================================
         // Keyword များကို Standard ပြောင်းခြင်း
         // =============================================
-        // Symbol များကို Space ပြောင်းခြင်း
         line = line.replace(/[=\/\*\-\.\+]/g, ' '); 
-        
-        // ရှုပ်ထွေးသော Keyword များ ရှင်းထုတ်ခြင်း
         line = line.replace(/ခွေ\s*(.*?)\s*အပူး(?:ပါ)?/g, 'kp $1')
             .replace(/kအပူးပါ|အပူးပါခွေ|ခွေအပူးပါ|ခွေp|ခွေa|ခွေပူး|ခပ|ka/g, 'kp');
-        
         line = line.replace(/ပတ်ရှင်း|ဒေးလီး|အပတ်ရှင်း|အပါတ်ရှင်း/g, ' ');
-        
         line = line.replace(/အပါ|ပတ်သီး|ပါတ်|ပတ်|ပါ/g, 'p') 
              .replace(/ခွေ|ခ/g, 'k').replace(/စုံစုံ/g, 'ss')
              .replace(/အာ|@|©|®/g, 'r').replace(/မမ/g, 'mm').replace(/စုံမ|စမ/g, 'sm')
@@ -1842,14 +1832,8 @@ function copySplitOverLimitText() {
              .replace(/အပူး၁၀ကွက်|အပူး10ကွက်|အပူး|အပ|ပူး/g, 'ap')
              .replace(/ဒဲ့ကပ်|ကပ်/g, 'dk').replace(/မနောက်|မန/g, 'mt').replace(/ထိပ်စီး|ထိပ်|ထ/g, 'h');
 
-        // 🔥 အရေးကြီး ပြင်ဆင်ချက် 🔥
-        // nk, kn, ng, nn တို့မှာပါတဲ့ 'n' ကို 't' (နောက်ပိတ်) အဖြစ် မှားမပြောင်းသွားအောင် 
-        // ယာယီ စာလုံးအကြီး (Uppercase) ပြောင်းပြီး ကာကွယ်ထားပါမည်။
         line = line.replace(/nk/g, 'NK').replace(/kn/g, 'KN').replace(/ng/g, 'NG').replace(/nn/g, 'NN');
-        
-        // ပြီးမှ 'n' (နောက်ပိတ်) ကို 't' သို့ ပြောင်းမည်
         line = line.replace(/နောက်ပိတ်|ပိတ်|နောက်|န|n/g, 't');
-        
         line = line.replace(/ဘရိတ်|ဘရ|ဘ|break|bk/g, 'b')
              .replace(/[။၊]/g, ' '); 
 
@@ -1857,24 +1841,35 @@ function copySplitOverLimitText() {
         if (!trim) continue;
         trim = trim.replace(/,/g, ' ');
 
+        // 🔥🔥🔥 အသစ်ထည့်သွင်းထားသော (Duplicate Check) အပိုင်း 🔥🔥🔥
+        // History ထဲမှာ ဒီနေ့ရက်စွဲနဲ့ ဒီစာကြောင်း အတိအကျ ဝင်ပြီးသားလား စစ်ဆေးပါမည်
+        if (customers[activeIndex] && customers[activeIndex].history) {
+            let isAlreadyEntered = customers[activeIndex].history.some(h => h.text === trim && h.date === todayDate);
+            
+            if (isAlreadyEntered) {
+                // ဝင်ပြီးသားဖြစ်နေရင် Alert ပြပါမည်
+                let wantToAddAgain = confirm(`⚠️ သတိပေးချက် (စာရင်းထပ်နေပါသည်)\n\n"${rawLine}" ကို ဒီနေ့စာရင်းထဲမှာ ထည့်သွင်းပြီးဖြစ်နေပါသည်။\n\nတကယ်ပဲ နောက်တစ်ခေါက် ထပ်ထည့်မှာ သေချာပါသလား?`);
+                
+                if (!wantToAddAgain) {
+                    continue; // Cancel နှိပ်ရင် ဒီစာကြောင်းကို မတွက်တော့ဘဲ ကျော်သွားပါမည်
+                }
+            }
+        }
+        // 🔥🔥🔥 Duplicate Check ပြီးပါပြီ 🔥🔥🔥
+
         let id = Date.now() + Math.random(); 
         let matches = [];
-        // (၁) ထိပ် + R တွဲလျက်ပုံစံ
-        // =============================================
-        // 🔥 ပြင်ဆင်ချက်- ထိပ်(h)၊ နောက်(t/n)၊ R(r) တွဲလျက်ပုံစံများ
-        // =============================================
-        // (၁) ထိပ် + နောက် တွဲလျက်ပုံစံ (ဥပမာ- 123 h 3000 t 2000)
+        
+        // (၁) ထိပ် + နောက် / ထိပ် + R တွဲလျက်ပုံစံ
         let htMatch = trim.match(/^(\d+)\s*h\s*(\d+)\s*(?:t|n)\s*(\d+)$/i);
-        // (၂) ထိပ် + R တွဲလျက်ပုံစံ (ဥပမာ- 123 h 3000 r 2000)
         let hrMatch = trim.match(/^(\d+)\s*h\s*(\d+)\s*r\s*(\d+)$/i);
 
         if (htMatch || hrMatch) {
             let match = htMatch || hrMatch;
             let digitStr = match[1];       
             let hAmt = parseInt(match[2]);  
-            let secondAmt = parseInt(match[3]); // ဒါက t သို့မဟုတ် r ရဲ့ ပမာဏဖြစ်မယ်
+            let secondAmt = parseInt(match[3]); 
             let digits = digitStr.split(''); 
-            let isR = !!hrMatch; // r ဖြစ်နေသလား စစ်တာ
             
             digits.forEach(d => {
                 for (let i = 0; i < 100; i++) {
@@ -1882,19 +1877,12 @@ function copySplitOverLimitText() {
                     let isHead = numStr.startsWith(d); 
                     let isRear = numStr.endsWith(d);    
                     
-                    if (isHead) {
-                        matches.push({ num: numStr, amt: hAmt });
-                    }
-                    if (isRear) {
-                        // r ပုံစံဆိုရင် ထိပ်ရောနောက်ရော ပါရမယ်၊ t ပုံစံဆိုရင် နောက်ပဲပါရမယ်
-                        matches.push({ num: numStr, amt: secondAmt });
-                    }
+                    if (isHead) matches.push({ num: numStr, amt: hAmt });
+                    if (isRear) matches.push({ num: numStr, amt: secondAmt });
                 }
             });
         } 
         else { 
-            // ... ကျန်တဲ့ dkMatch Logic များ ဆက်သွားမည် ... 
-            // (က) ဒဲ့ကပ် Logic
             let dkMatch = trim.match(/^(\d+)\s*dk\s*(\d+)\s*[\s,]+(\d+)(?:\s*(?:r|အာ)\s*(\d+))?/i);
             if (dkMatch) {
                 let fStr = dkMatch[1]; let bStr = dkMatch[2]; let mAmt = parseInt(dkMatch[3]); let rAmt = dkMatch[4] ? parseInt(dkMatch[4]) : 0; 
@@ -1904,7 +1892,6 @@ function copySplitOverLimitText() {
                 }
             }
             else {
-                // (ခ) Shortcut & Standard Logic
                 let hasShortcut = /[a-z\u1000-\u109f]+/i.test(trim); 
                 let isR = /r|အာ/i.test(trim) && !/bro/i.test(trim);
 
@@ -1932,7 +1919,8 @@ function copySplitOverLimitText() {
                             let fN = n.padStart(2, '0'); if (fN.length !== 2) return; 
                             let revN = fN[1] + fN[0];
                             if (fN === revN) { 
-                                let finalAmt = settings.doublePair ? (sA + rA) : sA; 
+                                // 'settings' is assumed to be globally available
+                                let finalAmt = (typeof settings !== 'undefined' && settings.doublePair) ? (sA + rA) : sA; 
                                 matches.push({ num: fN, amt: finalAmt }); 
                             } else { 
                                 if (sA > 0) matches.push({ num: fN, amt: sA }); 
@@ -1940,7 +1928,6 @@ function copySplitOverLimitText() {
                             } 
                         });
                     } else {
-                        // (ဃ) ပုံမှန် ဂဏန်းများ
                         let parts = trim.split(/\s+/).filter(x => /^\d+$/.test(x)); 
                         if (parts.length > 1) { 
                             let amt = parseInt(parts.pop()); 
@@ -1968,40 +1955,37 @@ function copySplitOverLimitText() {
                 allowAdd = confirm(`⚠️ သတိပေးချက်!\n\nသွင်းငွေပမာဏ (${bigAmountItem.amt}) သည် သတ်မှတ်ချက် (${WARNING_LIMIT}) ထက် များနေပါသည်။\n\nဆက်သွင်းမှာ သေချာပါသလား?`);
             }
             if (allowAdd) {
-                // ဒီနေ့ရက်စွဲယူမယ်
- // 🔥🔥🔥 အဓိက ပြင်ရမည့်နေရာ 🔥🔥🔥
                 matches.forEach(m => {
                     customers[activeIndex].data.push({ 
                         id: id, 
                         num: m.num, 
                         amt: m.amt, 
-                        date: todayDate // <--- ⚠️ ဒီကြောင်းလေး ပါမှ Report တက်မှာပါ
+                        date: todayDate 
                     });
                 }); 
                 
                 customers[activeIndex].history.push({ 
                     id: id, 
                     text: trim,
-                    date: todayDate // History မှာလည်း date ထည့်ထားရင် ပိုကောင်းပါတယ်
+                    date: todayDate
                 }); 
                 added = true;
             }
         }
-    } // Loop အပိတ်
+    } 
 
-    // 🔥 ပြင်ဆင်ထားသော အပိုင်း 🔥
     if (added) { 
-        saveToStorage(); // Data သိမ်းမယ်
-        // renderAll (တွက်ချက်မှု) မှာ Error တက်ခဲ့ရင်တောင် 
-        // အောက်က စာရှင်းတဲ့အလုပ် ဆက်လုပ်အောင် try-catch ခံလိုက်ပါပြီ
+        // 'saveToStorage' and 'renderAll' are assumed to be globally available functions
+        if (typeof saveToStorage === 'function') saveToStorage(); 
         try {
-            renderAll(); 
+            if (typeof renderAll === 'function') renderAll(); 
         } catch (e) {
-            console.error("Render Error:", e); // Error ကို Console မှာပြမယ် (App မရပ်သွားအောင်)
+            console.error("Render Error:", e); 
         }
-        field.value = ""; // စာကွက်ရှင်းမယ်
+        field.value = ""; 
     }
 }
+
   function processStandardCommands(line, matches) {
     // English Shortcut များ
     const SHORTCUT_LISTS = { 
