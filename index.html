@@ -2,7 +2,7 @@
 <html lang="my">
 <head>
     <meta charset="UTF-8">
-    <title>2D လည်ဂျာ V.4.22.2 </title>
+    <title>2D လည်ဂျာ V.22.2 </title>
     <link rel="icon" href="https://i.ibb.co/6ckfFrqw/Gemini-Generated-Image-nlrzqsnlrzqsnlrz-1-1-1.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -452,15 +452,12 @@ input, textarea, select, .tab, .data-table td, .report-table td, .report-table t
 </div>    
  <!-- ခလုတ်များ အပိုင်း (အစ) -->
 <div style="display: flex; align-items: center; gap: 5px; margin: 5px 0;">
-
     <button onclick="saveCurrentSession()" style="background:#27ae60; color:white; padding: 6px 10px; font-size:12px; border:none; border-radius:4px; white-space: nowrap; display: flex; align-items: center; gap: 3px;">
         💾 Save
     </button>
-
     <button onclick="saveMasterSystem()" style="background:#e67e22; color:white; padding: 6px 10px; font-size:12px; border:none; border-radius:4px; white-space: nowrap; display: flex; align-items: center; gap: 3px;">
         📂 Backup
     </button>
-
     <button onclick="openArchiveModal()" style="background:#8e44ad; color:white; padding: 6px 10px; font-size:12px; border:none; border-radius:4px; white-space: nowrap; display: flex; align-items: center; gap: 3px;">
         📜 မှတ်တမ်း
     </button>
@@ -1654,11 +1651,8 @@ if (!settings.customLimits) settings.customLimits = {};
         let finalText = `📅 ${new Date().toLocaleDateString()} (${targetName})\n------------------\n${historyLines || "(စာရင်းမရှိပါ)\n"}------------------\nTotal: ${totalAmt.toLocaleString()}`;
         copyToClipboard(finalText);
     }
-    // ====================================
-// ⚠️ Over Button (အတင်စာရင်း ကူးယူရန် Function - Updated Sort)
-// ========================================
-// --- (၁) အတင်စာရင်း Data တွက်ချက်ပေးမည့် Function (Common Helper) ---
-function getExportDataList() {
+
+  function getExportDataList() {
     let all = getOriginalTotals();
     const preToggle = document.getElementById('preLimitToggle');
     const preInput = document.getElementById('preLimitAmt');
@@ -1703,9 +1697,7 @@ function getExportDataList() {
     return { exportData, currentSort };
 }
 
-// --- (၂) ပုံမှန် အတင်စာရင်း (၁ ပိုင်းတည်း) Copy ကူးရန် Function ---
-// ဒီ Function ကို မူလ Copy ခလုတ်မှာ သုံးပါ
-function copyOverLimitText() {
+  function copyOverLimitText() {
     let { exportData, currentSort } = getExportDataList();
     
     if(exportData.length > 0) {
@@ -1727,9 +1719,7 @@ function copyOverLimitText() {
     }
 }
 
-// --- (၃) နှစ်ပိုင်းခွဲ၍ အတင်စာရင်း Copy ကူးရန် Function ---
-// ဒီ Function ကို နှစ်ပိုင်းခွဲမည့် ခလုတ်အသစ်မှာ သုံးပါ
-function copySplitOverLimitText() {
+  function copySplitOverLimitText() {
     let { exportData, currentSort } = getExportDataList();
     
     if(exportData.length > 0) {
@@ -1805,44 +1795,53 @@ function copySplitOverLimitText() {
         if (!rawLine.trim()) continue;
         let line = uniToEng(rawLine.toLowerCase());
         
-        // =============================================
-        // 🧹 Garbage Cleaning (မဆိုင်သောစာများ သန့်ရှင်းရေး)
-        // =============================================
         line = line.replace(/အစ်ကို|ညီလေး|ဆရာ|ကို|ဦး|ဒေါ်|ဗျာ|ခင်ဗျာ|ရှင့်|နော်|ok|help|plz|hi|hello|mingalarpar/g, ' ');
         line = line.replace(/မနက်|ညနေ|နေ့လည်|နံ|နံက်|ည|morning|evening|am|pm/g, ' ');
+
         line = line.replace(/ကျေးဇူး|တင်ပါတယ်|ရလား|ရမလား|လုပ်ပေးပါ|ထိုးမယ်|ပို|ဆို|ထဲက|သီးသန့်|အပြီး|စီး/g, ' ');
         line = line.replace(/ဒဲ့(?!ကပ်|k)/g, ' '); 
         line = line.replace(/တည့်/g, ' ');
-        
-        // =============================================
-        // Keyword များကို Standard ပြောင်းခြင်း
-        // =============================================
         line = line.replace(/[=\/\*\-\.\+]/g, ' '); 
+        line = line.replace(/ပတ်ရှင်း|ဒေးလီး|အပတ်ရှင်း|အပါတ်ရှင်း/g, ' ');
+
+        // 🛑 [အရေးကြီး] စကားလုံးအရှည်တွေကို အရင် Replace လုပ်ပါ 🛑
+        line = line.replace(/နတ္ခတ်|နက္ခတ်|နခ|နတ်ခက်|နက်ခတ်|နက်ခက်|နတ်ခတ်/g, 'nk');
+        line = line.replace(/ပါဝါ|ပဝ|power/g, 'pw');
+        line = line.replace(/ညီအစ်ကို|ညီအကို|ညီကို|ညက|bro|br/g, 'bro')
+              .replace(/စုံထိပ်|စထ/g, 'sh')
+              .replace(/မထိပ်|မထ/g, 'mh')
+              .replace(/စုံနောက်|စန/g, 'st')
+              .replace(/မနောက်|မန/g, 'mt');
+              
+        line = line.replace(/အပူး၁၀ကွက်|အပူး10ကွက်|အပူး|အပ|ပူး/g, 'ap')
+             .replace(/ဒဲ့ကပ်|ကပ်/g, 'dk')
+             .replace(/ထိပ်စီး|ထိပ်|ထ/g, 'h');
+
+        // 🛑 ပြီးမှ စာလုံးအတိုတွေကို နောက်မှ Replace လုပ်ပါ 🛑
         line = line.replace(/ခွေ\s*(.*?)\s*အပူး(?:ပါ)?/g, 'kp $1')
             .replace(/kအပူးပါ|အပူးပါခွေ|ခွေအပူးပါ|ခွေp|ခွေa|ခွေပူး|ခပ|ka/g, 'kp');
-        line = line.replace(/ပတ်ရှင်း|ဒေးလီး|အပတ်ရှင်း|အပါတ်ရှင်း/g, ' ');
-        line = line.replace(/အပါ|ပတ်သီး|ပါတ်|ပတ်|ပါ/g, 'p') 
-             .replace(/ခွေ|ခ/g, 'k').replace(/စုံစုံ/g, 'ss')
-             .replace(/အာ|@|©|®/g, 'r').replace(/မမ/g, 'mm').replace(/စုံမ|စမ/g, 'sm')
-             .replace(/မစုံ|မစ/g, 'ms').replace(/ကြီးကြီး/g, 'kk').replace(/ငယ်ငယ်|သေး/g, 'nn')
-             .replace(/ကြီးငယ်|ကြီးသေး/g, 'kn').replace(/ငယ်ကြီး|သေးကြီး/g, 'ng')
-             .replace(/ညီအစ်ကို|ညီကို|ညက|bro|br/g, 'bro').replace(/စုံထိပ်|စထ/g, 'sh')
-             .replace(/မထိပ်|မထ/g, 'mh').replace(/စုံနောက်|စန/g, 'st').replace(/ပါဝါ|ပဝ|power/g, 'pw')
-             .replace(/နက္ခတ်|နခ|နတ်ခက်|နက်ခတ်|နက်ခက်|နတ်ခတ်/g, 'nk')
-             .replace(/အပူး၁၀ကွက်|အပူး10ကွက်|အပူး|အပ|ပူး/g, 'ap')
-             .replace(/ဒဲ့ကပ်|ကပ်/g, 'dk').replace(/မနောက်|မန/g, 'mt').replace(/ထိပ်စီး|ထိပ်|ထ/g, 'h');
+        line = line.replace(/အပါ|ပတ်သီး|ပါတ်|ပတ်|ပါ/g, 'p'); 
+        line = line.replace(/ခွေ|ခ/g, 'k').replace(/စုံစုံ/g, 'ss');
+        
+        line = line.replace(/အာ|@|©|®/g, 'r');
+        line = line.replace(/မမ/g, 'mm').replace(/စုံမ|စမ/g, 'sm');
+        line = line.replace(/မစုံ|မစ/g, 'ms')
+              .replace(/ကြီးကြီး/g, 'kk').replace(/ငယ်ငယ်|သေး/g, 'nn')
+             .replace(/ကြီးငယ်|ကြီးသေး/g, 'kn')
+             .replace(/ငယ်ကြီး|သေးကြီး/g, 'ng');
 
         line = line.replace(/nk/g, 'NK').replace(/kn/g, 'KN').replace(/ng/g, 'NG').replace(/nn/g, 'NN');
-        line = line.replace(/နောက်ပိတ်|ပိတ်|နောက်|န|n/g, 't');
+        line = line.replace(/နောက်ပိတ်|ပိတ်|နောက်|ပ|န|n/g, 't');
         line = line.replace(/ဘရိတ်|ဘရ|ဘ|break|bk/g, 'b')
              .replace(/[။၊]/g, ' '); 
+             
+        // ... (အောက်ပိုင်းက အတူတူပဲ ဆက်သွားပါမည်) ...
+
 
         let trim = line.trim();
         if (!trim) continue;
         trim = trim.replace(/,/g, ' ');
 
-        // 🔥🔥🔥 အသစ်ထည့်သွင်းထားသော (Duplicate Check) အပိုင်း 🔥🔥🔥
-        // History ထဲမှာ ဒီနေ့ရက်စွဲနဲ့ ဒီစာကြောင်း အတိအကျ ဝင်ပြီးသားလား စစ်ဆေးပါမည်
         if (customers[activeIndex] && customers[activeIndex].history) {
             let isAlreadyEntered = customers[activeIndex].history.some(h => h.text === trim && h.date === todayDate);
             
@@ -1996,7 +1995,7 @@ function copySplitOverLimitText() {
     };
     // Myanmar Shortcut Mapping
     const MM_MAP = {
-        'နက္ခတ်': 'nk', 'နခ': 'nk', 'နက်ခတ်': 'nk',
+        'နတ္ခတ်': 'nk', 'နက္ခတ်': 'nk', 'နတ္ခက်': 'nk',  'နက္ခက်': 'nk', 'နက်ခတ်': 'nk', 'နက်ခက်': 'nk', 'နခ': 'nk', 'နတ်ခတ်': 'nk', 'နတ်ခက်': 'nk', 
         'ပါဝါ': 'pw', 'ပဝ': 'pw',
         'ညီအစ်ကို': 'bro', 'ညီကို': 'bro', 'ညီအကို': 'bro',
         'အပူး': 'ap', 'အပ': 'ap', 'ပူး': 'ap',
