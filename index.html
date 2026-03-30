@@ -1813,13 +1813,12 @@ if (!settings.customLimits) settings.customLimits = {};
               .replace(/စုံနောက်|စန/g, 'st')
               .replace(/မနောက်|မန/g, 'mt');
               
-        line = line.replace(/အပူး၁၀ကွက်|အပူး10ကွက်|အပူး|အပ|ပူး/g, 'ap')
+        line = line.replace(/kအပူးပါ|အပူးပါခွေ|ခွေအပူးပါ|ခွေp|ခွေa|ခွေပူး|ခပ|ka/g, 'kp').replace(/အပူး၁၀ကွက်|အပူး10ကွက်|အပူး|အပ|ပူး/g, 'ap')
              .replace(/ဒဲ့ကပ်|ကပ်/g, 'dk')
              .replace(/ထိပ်စီး|ထိပ်|ထ/g, 'h');
 
         // 🛑 ပြီးမှ စာလုံးအတိုတွေကို နောက်မှ Replace လုပ်ပါ 🛑
-        line = line.replace(/ခွေ\s*(.*?)\s*အပူး(?:ပါ)?/g, 'kp $1')
-            .replace(/kအပူးပါ|အပူးပါခွေ|ခွေအပူးပါ|ခွေp|ခွေa|ခွေပူး|ခပ|ka/g, 'kp');
+        line = line.replace(/ခွေ\s*(.*?)\s*အပူး(?:ပါ)?/g, 'kp $1');
         line = line.replace(/အပါ|ပတ်သီး|ပါတ်|ပတ်|ပါ/g, 'p'); 
         line = line.replace(/ခွေ|ခ/g, 'k').replace(/စုံစုံ/g, 'ss');
         
