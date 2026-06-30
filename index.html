@@ -1795,7 +1795,12 @@ if (!settings.customLimits) settings.customLimits = {};
         if (!rawLine.trim()) continue;
         let line = uniToEng(rawLine.toLowerCase());
         
-        line = line.replace(/အစ်ကို|ညီလေး|ဆရာ|ကို|ဦး|ဒေါ်|ဗျာ|ခင်ဗျာ|ရှင့်|နော်|ok|help|plz|hi|hello|mingalarpar/g, ' ');
+        // 🔥 [ဒီနေရာမှာ အရင်ဆုံး ထားရပါမယ်] 'ည' မဖျက်ခင် bro အရင်ပြောင်းပါ 🔥
+        line = line.replace(/ညီအစ်ကို|ညီအကို|ညီကို|ညက|bro|br/g, 'bro');
+        line = line.replace(/အပါ|ပတ်သီး|ပါတ်|ပတ်|ပါ/g, 'p');
+
+        // ပြီးမှ အောက်က ဟာတွေ ဆက်လုပ်ပါ
+        line = line.replace(/ဆရာ|ဦး|ဒေါ်|ဗျာ|ခင်ဗျာ|ရှင့်|နော်|ok|help|plz|hi|hello|mingalarpar/g, ' ');
         line = line.replace(/မနက်|ညနေ|နေ့လည်|နံ|နံက်|ည|morning|evening|am|pm/g, ' ');
 
         line = line.replace(/ကျေးဇူး|တင်ပါတယ်|ရလား|ရမလား|လုပ်ပေးပါ|ထိုးမယ်|ပို|ဆို|ထဲက|သီးသန့်|အပြီး|စီး/g, ' ');
@@ -1807,8 +1812,8 @@ if (!settings.customLimits) settings.customLimits = {};
         // 🛑 [အရေးကြီး] စကားလုံးအရှည်တွေကို အရင် Replace လုပ်ပါ 🛑
         line = line.replace(/နတ္ခတ်|နက္ခတ်|နခ|နတ်ခက်|နက်ခတ်|နက်ခက်|နတ်ခတ်/g, 'nk');
         line = line.replace(/ပါဝါ|ပဝ|power/g, 'pw');
-        line = line.replace(/ညီအစ်ကို|ညီအကို|ညီကို|ညက|bro|br/g, 'bro')
-              .replace(/စုံထိပ်|စထ/g, 'sh')
+        // (bro လိုင်းကို အပေါ်တင်လိုက်ပြီဖြစ်လို့ ဒီနေရာမှာ မရှိတော့ပါ)
+        line = line.replace(/စုံထိပ်|စထ/g, 'sh')
               .replace(/မထိပ်|မထ/g, 'mh')
               .replace(/စုံနောက်|စန/g, 'st')
               .replace(/မနောက်|မန/g, 'mt');
