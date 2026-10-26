@@ -692,9 +692,14 @@ input, textarea, select, .tab, .data-table td, .report-table td, .report-table t
                 style="flex:1; background:#17a2b8; color:white; border:none;
                 border-radius:6px; font-size:13px; font-weight:bold;">📤 Copy
                 (Split)</button>
+                <!-- ၁။ မူရင်း ကာရန် copy (အတိုင်းပဲ ထားပါ) -->
                 <button onclick="copyOverLimitText()" style="flex:1;
                 background:#f39c12; color:white; border:none; border-radius:6px;
                 font-size:13px; font-weight:bold;">📤 ကာရန် copy</button>
+              <!-- ၂။ အခု အသစ်တိုးလိုက်တဲ့ ကာရန် copy (R) ပုံစံ -->
+                <button onclick="copyOverLimitTextR()" style="flex:1; margin-left: 5px;
+                background:#e67e22; color:white; border:none; border-radius:6px;
+                font-size:13px; font-weight:bold;">📤 ကာရန် copy (R)</button>
                 <button onclick="showProfitTable()" style="flex:1;
                 background:#8e44ad; color:white; border:none; border-radius:6px;
                 font-size:13px; font-weight:bold;">📊 အရှုံး/ အမြတ်</button>
@@ -1308,7 +1313,6 @@ if (!settings.customLimits) settings.customLimits = {};
     dispProf.innerText = Math.round(profit).toLocaleString(); 
     dispProf.style.color = profit >= 0 ? "#28a745" : "#d9534f";
 }
-
   function updateExportDisplay() {
     // ၁။ Element များကို ခေါ်ယူခြင်း
     const limitInput = document.getElementById('limitInput'); 
@@ -1514,7 +1518,7 @@ if (!settings.customLimits) settings.customLimits = {};
         if (!t) return alert("ကူးယူစရာ စာရင်းမရှိပါ"); let e = document.createElement('textarea'); e.value = t; e.style.fontSize = '12pt'; e.style.border = '0'; e.style.padding = '0'; e.style.margin = '0'; e.style.position = 'fixed'; e.style.left = '-9999px'; e.style.top = '0px'; document.body.appendChild(e); e.focus(); e.select(); e.setSelectionRange(0, 99999); 
         try { let successful = document.execCommand('copy'); if(successful) alert("Copied!"); else alert("Copy failed"); } catch (err) { alert("Error copying text"); } document.body.removeChild(e);
     }
-    // --- Archive System (ဖုန်းထဲတွင် သိမ်းဆည်းခြင်း စနစ်) ---
+    // --- Archive System (ဖုန်းထဲတွင် သိမ်းဆည်းခြင်း စနစ်) 
   function saveCurrentSession() {
         if (!customers.some(c => c.data.length > 0)) { alert("သိမ်းစရာ စာရင်းမရှိပါ"); return; }
         // --- အချိန် နှင့် ရက်စွဲ တွက်ချက်ခြင်း ---
@@ -1683,7 +1687,6 @@ if (!settings.customLimits) settings.customLimits = {};
         let finalText = `📅 ${new Date().toLocaleDateString()} (${targetName})\n------------------\n${historyLines || "(စာရင်းမရှိပါ)\n"}------------------\nTotal: ${totalAmt.toLocaleString()}`;
         copyToClipboard(finalText);
     }
-
   function getExportDataList() {
     let all = getOriginalTotals();
     const preToggle = document.getElementById('preLimitToggle');
@@ -1728,8 +1731,11 @@ if (!settings.customLimits) settings.customLimits = {};
     
     return { exportData, currentSort };
 }
-
-  function copyOverLimitText() {
+  // ==========================================
+// (၁) ပုံဟောင်းအတွက် မူရင်း Function 
+// (ဒါလေးရှိမှ ပုံဟောင်း ခလုတ်နှိပ်လို့ရမှာပါ)
+// ==========================================
+function copyOverLimitText() {
     let { exportData, currentSort } = getExportDataList();
     
     if(exportData.length > 0) {
@@ -1749,6 +1755,61 @@ if (!settings.customLimits) settings.customLimits = {};
     } else {
         alert("⚠️ အတင်မရှိပါ (No Export)");
     }
+}
+
+// ==========================================
+// (၂) ပုံစံသစ်အတွက် Function (R ပုံစံ)
+// (ဒါက အသစ်တိုးထားတဲ့ ခလုတ်အတွက်ပါ)
+// ==========================================
+function copyOverLimitTextR() {
+    let { exportData, currentSort } = getExportDataList();
+    
+    if (exportData.length === 0) {
+        alert("⚠️ အတင်မရှိပါ (No Export)");
+        return;
+    }
+
+    let amtMap = {};
+    let total = 0;
+    
+    exportData.forEach(item => {
+        amtMap[item.num] = item.amt;
+        total += item.amt;
+    });
+
+    let processed = new Set(); 
+    let lines = [];
+    let sortedNums = Object.keys(amtMap).sort();
+
+    sortedNums.forEach(num => {
+        if (processed.has(num)) return;
+
+        let amt1 = amtMap[num];
+        let rev = num[1] + num[0]; 
+
+        if (num === rev) { 
+            lines.push(`${num}-${amt1}`);
+            processed.add(num);
+        } else if (amtMap.hasOwnProperty(rev)) {
+            let amt2 = amtMap[rev];
+            if (amt1 === amt2) {
+                lines.push(`${num} r ${amt1}`);
+            } else {
+                lines.push(`${num}-${amt1} R ${amt2}`);
+            }
+            processed.add(num);
+            processed.add(rev);
+        } else {
+            lines.push(`${num}-${amt1}`);
+            processed.add(num);
+        }
+    });
+
+    let finalText = "--- အတင်စာရင်း (R) ---\n" + lines.join('\n') + 
+                    `\n----------\nTotal: ${total.toLocaleString()}`;
+    
+    copyToClipboard(finalText);
+    alert("✅ အတင်စာရင်း (R ပုံစံ) Copy ကူးပြီးပါပြီ!");
 }
 
   function copySplitOverLimitText() {
@@ -1812,7 +1873,6 @@ if (!settings.customLimits) settings.customLimits = {};
         alert("⚠️ အတင်မရှိပါ (No Export)");
     }
 }
-
   function processInput() {
     const field = $('rawInput'); 
     if (!field.value.trim() || activeIndex === -1) return;
@@ -1829,6 +1889,7 @@ if (!settings.customLimits) settings.customLimits = {};
         
         // 🔥 [ဒီနေရာမှာ အရင်ဆုံး ထားရပါမယ်] 'ည' မဖျက်ခင် bro အရင်ပြောင်းပါ 🔥
         line = line.replace(/ညီအစ်ကို|ညီအကို|ညီကို|ညက|bro|br/g, 'bro');
+        line = line.replace(/ပါဝါ|ပဝ|power/g, 'pw');
         line = line.replace(/အပါ|ပတ်သီး|ပါတ်|ပတ်|ပါ/g, 'p');
 
         // ပြီးမှ အောက်က ဟာတွေ ဆက်လုပ်ပါ
@@ -1843,7 +1904,7 @@ if (!settings.customLimits) settings.customLimits = {};
 
         // 🛑 [အရေးကြီး] စကားလုံးအရှည်တွေကို အရင် Replace လုပ်ပါ 🛑
         line = line.replace(/နတ္ခတ်|နက္ခတ်|နခ|နတ်ခက်|နက်ခတ်|နက်ခက်|နတ်ခတ်/g, 'nk');
-        line = line.replace(/ပါဝါ|ပဝ|power/g, 'pw');
+
         // (bro လိုင်းကို အပေါ်တင်လိုက်ပြီဖြစ်လို့ ဒီနေရာမှာ မရှိတော့ပါ)
         line = line.replace(/စုံထိပ်|စထ/g, 'sh')
               .replace(/မထိပ်|မထ/g, 'mh')
@@ -2020,7 +2081,6 @@ if (!settings.customLimits) settings.customLimits = {};
         field.value = ""; 
     }
 }
-
   function processStandardCommands(line, matches) {
     // English Shortcut များ
     const SHORTCUT_LISTS = { 
@@ -2254,7 +2314,6 @@ if (!settings.customLimits) settings.customLimits = {};
 
     alert("✅ Win Number အပါအဝင် ဒေတာအားလုံး ရှင်းလင်းပြီးပါပြီ။");
 }
-
   function showCurrentDateTime() {
     const now = new Date();
     // ရက်စွဲ Format (ဥပမာ - 13/01/2026)
@@ -3372,7 +3431,7 @@ function displayMonthlyReport() {
         console.error(err);
     });
 }
-	// 🔄 အက်ပ်ပွင့်တာနဲ့ Save ထားတာတွေကို ပြန်ခေါ်မယ်
+  // 🔄 အက်ပ်ပွင့်တာနဲ့ Save ထားတာတွေကို ပြန်ခေါ်မယ်
 document.addEventListener('DOMContentLoaded', function() {
     const preLimitInput = document.getElementById('preLimitAmt');
     const comInput = document.getElementById('preLimitCom');
@@ -3396,7 +3455,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePreLimitStats();
     }
 });
-	
+
 </script>
 <div id="contactModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2147483647; justify-content:center; align-items:center;">
     <div style="background:white; width:85%; max-width:350px; padding:25px; border-radius:15px; text-align:center;">
