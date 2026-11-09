@@ -295,88 +295,120 @@ body {
     font-weight: bold !important;
 }
 
- /* ========================================
-   MOBILE & TABLET RESPONSIVE FIX (New)
-   ==================================== */
+/* =========================================================
+   ၁။ စခရင်ကြီး / ကွန်ပျူတာ / တက်ဘလက်အတွက် (အချိုးကျ ညီစေရန်)
+   ========================================================= */
+.main-wrapper { 
+    display: flex !important; 
+    flex-direction: row !important; /* ဘယ်ညာ ဘေးချင်းယှဉ်မည် */
+    align-items: stretch !important; 
+    gap: 10px !important; 
+    flex: 1 !important; 
+    padding: 0 5px !important; 
+    box-sizing: border-box !important; 
+    overflow: hidden !important; 
+}
+
+/* ဘယ်ဘက် Win Column (နေရာ ၅၀% ယူမည်) */
+.left-panel { 
+    flex: 1 1 50% !important; 
+    width: 50% !important; 
+    min-width: 0 !important; /* Container ကျုံ့/ကား အဆင်ပြေစေရန် */
+    display: flex !important; 
+    flex-direction: column !important; 
+    background: white !important; 
+    border-radius: 8px !important; 
+    overflow: hidden !important; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; 
+}
+
+/* ညာဘက် Sidebar - History + Customer (နေရာ ၅၀% ယူမည်) */
+.right-sidebar { 
+    flex: 1 1 50% !important; 
+    width: 50% !important; 
+    min-width: 0 !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    gap: 8px !important; 
+    height: 100% !important; 
+}
+
+/* History Box */
+.log-container { 
+    width: 100% !important; 
+    background: white !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    border-radius: 8px !important; 
+    border: 1px solid #eee !important; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; 
+    overflow: hidden !important; 
+    flex: 1 !important;
+    min-height: 180px !important; 
+}
+
+/* Customer Box */
+.right-panel { 
+    width: 100% !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    gap: 8px !important; 
+    flex: 1 !important; 
+}
+
+
+/* =========================================================
+   ၂။ ဖုန်းစခရင်ငယ်များအတွက် (အပေါ်အောက် အထပ်လိုက် ပြောင်းမည်)
+   ========================================================= */
 @media only screen and (max-width: 760px) { 
+    body, html, #mainApp {
+        width: 100% !important;
+        overflow-x: auto !important; 
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+    }
+    
     .main-wrapper {
         display: flex !important;
-        gap: 6px !important;
-        flex: 1 !important;
-        padding: 0 5px !important; /* padding: 0 အစား ဒါကိုထည့်ပါ */
+        flex-direction: column !important; /* ဖုန်းတွင် အပေါ်အောက် အထပ်လိုက်စီမည် */
+        gap: 8px !important;
+        padding: 0 5px !important;
         margin: 5px 0 0 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
-}
-/* --- Pre Limit Box နှင့် အောက်က Column များကို အနားစွန်း ကွက်တိညီစေရန် --- */
-.main-wrapper {
-    display: flex !important;
-    gap: 8px !important;
-    flex: 1 !important;
-    padding: 0 !important; /* Padding ကို လုံးဝ 0 ထားပါ */
-    margin: 5px 0 0 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
 
-/* ဘယ်ဘက် Win Column ကို ၅၀% ယူမည် */
-.left-panel { 
-    flex: 1; 
-    width: 50%; /* 👈 Width အညီအမျှ ထားရန် */
-    display: flex; 
-    flex-direction: column; 
-    background: white; 
-    border-radius: 8px; 
-    overflow: hidden; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-}
+    .left-panel {
+        width: 100% !important;
+        flex: none !important;
+        background: white !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+        margin: 0 !important;
+    }
 
-/* ညာဘက် Sidebar (History + Customer) ကိုလည်း ၅၀% ယူမည် */
-.right-sidebar { 
-    flex: 1; 
-    width: 50%; /* 👈 Win Column နဲ့ အကျယ် အတူတူ ညှိရန် */
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-    height: 100%; 
-}
-
-/* History Box ကို ညာဘက် Horizontal နေရာအပြည့် ယူစေရန် */
-.log-container { 
-    width: 100% !important; 
-    background: white; 
-    display: flex; 
-    flex-direction: column; 
-    border-radius: 8px; 
-    border: 1px solid #eee; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-    overflow: hidden !important; 
-    flex: 1;
-    min-height: 180px; 
-}
-
-/* Customer Panel က အောက်မှာ အပြည့်ပေါ်နေစေရန် */
-.right-panel { 
-    width: 100% !important; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-    flex: 1; 
-}
-
-    .input-area { height: 120px !important; }
-    /* Header အောက်က ခလုတ်တန်းများ */
-    .header + div {
+    .right-sidebar {
+        width: 100% !important;
+        flex: none !important;
         display: flex !important;
         flex-direction: column !important;
+        gap: 8px !important;
+        height: auto !important;
+        margin: 0 !important;
     }
-    .header + div > div {
-        margin-bottom: 5px !important;
+
+    .log-container {
+        width: 100% !important;
+        max-height: 220px !important;
+    }
+
+    .right-panel {
         width: 100% !important;
     }
-    /* Sidebar */
-    .sidebar { width: 85% !important; max-width: 350px !important; }
+
+    .input-area { height: 120px !important; }
 }
 /* (၂) 600px အောက် (ဖုန်းအသေးများ) အတွက် ဇယားကွက် ပြင်ဆင်မှု */
 @media only screen and (max-width: 600px) {
